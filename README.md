@@ -26,10 +26,23 @@ cd codeclaw
 npm install
 npm run build
 ./container/build.sh
-npm start
 ```
 
-On first start, CodeClaw launches a setup wizard at `http://localhost:3000/github/setup` to create and install a GitHub App via the manifest flow.
+### Create a GitHub App
+
+Before starting the server, create a GitHub App using the CLI setup script. Pass the public URL where GitHub will send webhooks (e.g. an ngrok tunnel or your server's domain):
+
+```bash
+npx tsx setup/index.ts --step github-app -- --webhook-url https://your-domain.com
+```
+
+This opens your browser to create a GitHub App via the manifest flow, exchanges the OAuth code, and saves the credentials to `.env` and `~/.config/codeclaw/github-app.pem` automatically. Install the app on the repos you want to monitor when prompted.
+
+### Start the server
+
+```bash
+npm start
+```
 
 ## Deploy to Fly.io
 
@@ -49,11 +62,13 @@ Requirements:
 - Node.js 20+
 - Docker (for spawning agent containers)
 
-Set these environment variables:
-- `ANTHROPIC_API_KEY` — Claude API key
-- `GITHUB_APP_ID` — from your GitHub App
-- `GITHUB_WEBHOOK_SECRET` — webhook signature secret
-- Store your private key at `~/.config/codeclaw/github-app.pem`
+Set `ANTHROPIC_API_KEY` in your environment, then run the CLI setup to create a GitHub App:
+
+```bash
+npx tsx setup/index.ts --step github-app -- --webhook-url https://your-public-url.com
+```
+
+This writes `GITHUB_APP_ID`, `GITHUB_WEBHOOK_SECRET`, and `GITHUB_PRIVATE_KEY_PATH` to `.env` automatically. If you prefer to configure manually, set these environment variables yourself and store the private key at `~/.config/codeclaw/github-app.pem`.
 
 ## Per-Repo Configuration
 
