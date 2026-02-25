@@ -19,12 +19,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy project definition and install dependencies
+# Copy project definition and source, then install
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir .
-
-# Copy source
 COPY clawcode/ ./clawcode/
+RUN pip install --no-cache-dir .
 COPY container/ ./container/
 COPY groups/ ./groups/
 
