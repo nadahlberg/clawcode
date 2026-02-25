@@ -29,7 +29,13 @@ npm run build
 npm start
 ```
 
-On first start, CodeClaw launches a setup wizard at `http://localhost:3000/github/setup` to create and install a GitHub App via the manifest flow.
+To create and install a GitHub App, run the setup step with your public webhook URL (e.g. from `ngrok http 3000`):
+
+```bash
+npx tsx setup/index.ts --step github-app -- --webhook-url https://your-public-url.example
+```
+
+This opens your browser to create the App via GitHub's manifest flow, saves credentials to `.env`, and exits.
 
 ## Deploy to Fly.io
 
