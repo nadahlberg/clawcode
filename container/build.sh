@@ -13,7 +13,21 @@ CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-docker}"
 echo "Building ClawCode agent container image..."
 echo "Image: ${IMAGE_NAME}:${TAG}"
 
-${CONTAINER_RUNTIME} build -t "${IMAGE_NAME}:${TAG}" .
+# Use --network=host to bypass Docker bridge networking during builds.
+# This avoids conntrack errors and DNS resolution failures that occur
+# when Docker's bridge network has issues (common in Fly.io VMs).
+MAX_RETRIES=3
+for attempt in $(seq 1 $MAX_RETRIES); do
+  if ${CONTAINER_RUNTIME} build --network=host -t "${IMAGE_NAME}:${TAG}" .; then
+    break
+  fi
+  if [ "$attempt" -eq "$MAX_RETRIES" ]; then
+    echo "ERROR: Build failed after $MAX_RETRIES attempts"
+    exit 1
+  fi
+  echo "Build attempt $attempt failed, retrying in $((attempt * 5))s..."
+  sleep $((attempt * 5))
+done
 
 echo ""
 echo "Build complete!"

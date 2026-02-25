@@ -40,9 +40,12 @@ if [ -d /data ]; then
   ln -sfn /data /app/data
 fi
 
-# Start Docker daemon with persistent storage on /data volume
+# Start Docker daemon with persistent storage on /data volume.
+# Explicit --dns avoids relying on host DNS that can break due to
+# conntrack/bridge networking issues in Fly.io VMs.
 mkdir -p /data/docker
-dockerd --data-root /data/docker --storage-driver overlay2 &
+dockerd --data-root /data/docker --storage-driver overlay2 \
+  --dns 8.8.8.8 --dns 1.1.1.1 &
 
 # Wait for Docker daemon to be ready
 echo "Waiting for Docker daemon..."
