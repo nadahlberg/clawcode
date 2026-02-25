@@ -10,7 +10,6 @@ import json
 import os
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Callable, Coroutine
 
 from codeclaw.config import DATA_DIR, MAX_CONCURRENT_CONTAINERS
